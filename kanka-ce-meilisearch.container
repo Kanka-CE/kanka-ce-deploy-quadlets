@@ -1,0 +1,34 @@
+[Unit]
+Description=Meilisearch for KankaCE
+After=network-online.target
+Wants=network-online.target
+
+
+[Container]
+ContainerName=kanka-ce-meilisearch
+Image=docker.io/getmeili/meilisearch:latest
+Pod=kanka-ce.pod
+
+Volume=kanka-ce-meilisearch.volume:/meili_data
+
+# Secrets
+Secret=kanka-ce-meilisearch-password,type=env,target=MEILI_MASTER_KEY
+
+# Environments
+Environment=MEILI_NO_ANALYTICS=false
+
+# Healthcheck
+HealthCmd=wget --no-verbose --spider http://127.0.0.1:7700/health
+HealthRetries=3
+HealthTimeout=5s
+HealthInterval=60s
+HealthStartPeriod=10s
+HealthOnFailure=kill
+
+
+[Service]
+Restart=always
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target default.target

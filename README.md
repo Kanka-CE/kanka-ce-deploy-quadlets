@@ -1,0 +1,149 @@
+# Podman Quadlets for KankaCE
+
+Another solution besides Docker and Docker Compose is to use Podman Quadlets.
+They make it easy to run the container rootless, integrate tightly with systemd, and are easy to maintain.
+Features like Podman secrets let you keep sensitive data out of the quadlet files, 
+so you can safely back up your configuration to Git.
+
+## Requirements
+This guide assumes your server is already up and running, with a recent and
+updated version of a server-suitable Linux distribution, e.g., [Rocky Linux](https://rockylinux.org/),
+[Debian](https://www.debian.org/index.de.html), etc. You also need 
+[Podman](https://podman.io/docs/installation).
+
+**Recommendation:**
+To get a graphical interface to manage your quads, once they are deployed, you can use Cockpit with the component for Podman containers.
+
+<details>
+<summary>Podman – Rocky Linux (dnf)</summary>
+
+Install Podman
+
+```bash
+sudo dnf -y install podman
+```
+
+Install Cockpit with the Cockpit component for Podman containers
+```bash
+sudo dnf -y install cockpit cockpit-podman
+```
+
+</details>
+
+<summary>Podman – Debian (apt)</summary>
+
+Install Podman
+
+```bash
+sudo apt -y install podman 
+```
+
+Install Cockpit with the Cockpit component for Podman containers
+```bash
+sudo apt -y install cockpit cockpit-podman
+```
+
+</details>
+
+
+## Quick Start
+1. Download the repository (or your own fork of this repository) 
+    ```bash
+    git clone https://github.com/Kanka-CE/kanka-ce-deploy-quadlets.git ~/.config/containers/systemd/kanka-ce
+    ```
+
+2. Create the Secrets
+    ```bash
+    printf $(openssl rand -hex 16) | podman secret create kanka-ce-mariadb-password -
+    printf $(openssl rand -hex 16) | podman secret create kanka-ce-mariadb-root-password -
+    printf $(openssl rand -hex 16) | podman secret create kanka-ce-meilisearch-password -
+    printf "base64:$(openssl rand -base64 32)" | podman secret create kanka-ce-app-key -
+    ```
+
+3. Create a fontawesome-key and place it into a secret
+    <details>
+    <summary>Create Fontawsome `<kit-id>`</summary>
+    1.) Go to https://fontawesome.com/start to create an account.
+    2.) Create a (free) kit.
+    3.) Go to https://fontawesome.com/kits
+    3.1) Select your kit
+    3.2) copy the id either from the url: https://fontawesome.com/kits/<kit-id>/setup
+         or from the example: <script src="https://kit.fontawesome.com/<kit-id>.js" crossorigin="anonymous"></script>
+         and paste only the <kit-id> here.
+    </details>
+
+    ```bash
+    export FONTAWESOME_KIT=<kit-id>
+    printf ${FONTAWESOME_KIT} | podman secret create fontawesome-key -
+    ```
+
+3. Create your configuration
+    ```bash
+    cp ~/.config/containers/systemd/kanka-ce/.env.example ~/.config/containers/systemd/kanka-ce/.env
+    ```
+    and modify `~/.config/containers/systemd/kanka-ce/.env` based on your needs.
+
+
+4.  Create the storage location
+    ```bash
+    export KANKACE_STORAGE_DIR=</path/to/persistent/storage>
+    mkdir -p ${KANKACE_STORAGE_DIR}
+    sed -i "s|podman-storage-kankace|${KANKACE_STORAGE_DIR}|g" ~/.config/containers/systemd/kanka-ce/*.volume
+    ```
+
+5. Apply the changes
+    ```bash
+    systemctl --user daemon-reload
+    ```
+    And allow the service to keep running after the user logs out
+    ```
+    loginctl enable-linger $USER
+    ```
+
+6. Run KankaCE
+    ```bash
+    systemctl --user start kank-ce
+    ```
+
+
+## More Details on Podman Quadlets
+
+### Download the quadlet files
+First, create a (private) fork of this repository, as you probably want to adapt the configuration to your needs.
+Then clone your fork (in this example, we use this repository, so do not forget to adapt the repository URL):
+
+For **system-wide** quadlets, place the folder at `/etc/containers/systemd/`
+```bash
+git clone https://github.com/Kanka-CE/kanka-ce-deploy-quadlets.git /etc/containers/systemd/kanka-ce
+```
+
+(Recommended) For **rootless** quadlets, place the folder at  `~/.config/containers/systemd/`
+```bash
+git clone https://github.com/Kanka-CE/kanka-ce-deploy-quadlets.git ~/.config/containers/systemd/kanka-ce
+```
+
+### Create the secrets
+In general, Podman secrets can be created via
+```bash
+printf <password> | podman secret create <secret-label> -
+```
+
+or to create a secret with a randomly generated password
+```bash
+printf $(openssl rand -hex 16) | podman secret create <secret-label> -
+```
+
+To view a list of all secrets, run
+```bash
+podman secret ls
+```
+
+and the password stored in a given secret can be accessed via
+```bash
+podman secret inspect --showsecret <secret-label>
+```
+
+To delete a secret, run
+```bash
+podman secret rm <secret-label>
+```

@@ -1,0 +1,17 @@
+[Unit]
+Description=Kanka CE Pod
+After=network-online.target
+Wants=network-online.target
+
+[Pod]
+PodName=kanka-ce
+Network=kanka-ce.network
+PublishPort=8081:80
+
+[Service]
+Restart=always
+
+# The following part automatically starts
+# the container during the boot of the host
+#[Install]
+#WantedBy=multi-user.target default.target

@@ -1,0 +1,87 @@
+[Unit]
+Description=KankaCE
+After=kanka-ce-mariadb.service kanka-ce-redis.service kanka-ce-meilisearch.service
+Requires=kanka-ce-mariadb.service kanka-ce-redis.service kanka-ce-meilisearch.service
+
+[Container]
+ContainerName=kanka-ce
+Image=ghcr.io/kanka-ce/kanka-ce:latest
+Pod=kanka-ce.pod
+
+Volume=kanka-ce.volume:/app/www/storage
+Volume=.env:/app/www/.env:z
+
+# The variables that do need modification are located in the `.env` file
+EnvironmentFile=.env
+
+
+# =========================
+# FIXED SECTION: 
+# =========================
+# The following values, normally do not need modification
+
+# Application encryption key
+Secret=kanka-ce-app-key,type=env,target=APP_KEY
+
+# User/Group ID
+Environment=PUID=1000
+Environment=PGID=1000
+
+
+# -------------------------
+# Frontend/icons
+# -------------------------
+# See the README for instructions on how to generate a FONTAWESOME_KIT key.
+Secret=fontawesome-key,type=env,target=FONTAWESOME_KIT
+
+
+# -------------------------
+# Database
+# -------------------------
+Environment=DB_CONNECTION=mysql
+Environment=DB_HOST=kanka-ce-mariadb
+Environment=DB_PORT=3306
+Environment=DB_DATABASE=kanka
+Environment=DB_USERNAME=kanka
+Secret=kanka-ce-mariadb-password,type=env,target=DB_PASSWORD
+Secret=kanka-ce-mariadb-root-password,type=env,target=DB_ROOT_PASSWORD
+
+# -------------------------
+# Cache, sessions, queues
+# -------------------------
+#Environment=BROADCAST_DRIVER=reverb
+Environment=CACHE_DRIVER=redis
+Environment=CACHE_PREFIX=kanka
+Environment=SESSION_DRIVER=database
+Environment=SESSION_LIFETIME=120
+Environment=QUEUE_DRIVER=sync
+
+# -------------------------
+# Redis
+# -------------------------
+Environment=REDIS_HOST=kanka-ce-redis
+Environment=REDIS_PASSWORD=
+Environment=REDIS_PORT=6379
+
+# -------------------------
+# File storage
+# -------------------------
+# For large deployments, with many worlds, you can consider MinIO instead. 
+# However, for most use cases this should be fine
+Environment=FILESYSTEM_DRIVER=public
+
+# -------------------------
+# Search (Meilisearch)
+# -------------------------
+Environment=SCOUT_DRIVER=meilisearch
+Environment=SCOUT_QUEUE=true
+Environment=MEILISEARCH_HOST=kanka-ce-meilisearch:7700 
+Secret=kanka-ce-meilisearch-password,type=env,target=MEILISEARCH_KEY
+
+
+[Service]
+Restart=always
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target default.target

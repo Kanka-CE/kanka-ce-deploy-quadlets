@@ -1,0 +1,10 @@
+[Unit]
+Description=Persistent storage of the MariaDB for KankaCE
+
+[Volume]
+Device=podman-storage-kankace/mariadb
+Type=none
+Options=bind
+
+User=1000
+Group=1000

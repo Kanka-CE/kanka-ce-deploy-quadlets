@@ -1,0 +1,36 @@
+[Unit]
+Description=MariaDB database for KankaCE
+After=network-online.target
+Wants=network-online.target
+
+
+[Container]
+ContainerName=kanka-ce-mariadb
+Image=docker.io/library/mariadb:latest
+Pod=kanka-ce.pod
+
+Volume=kanka-ce-mariadb.volume:/var/lib/mysql
+
+# Secrets
+Secret=kanka-ce-mariadb-password,type=env,target=MARIADB_PASSWORD
+Secret=kanka-ce-mariadb-root-password,type=env,target=MARIADB_ROOT_PASSWORD
+
+# Environments
+Environment=MARIADB_USER=kanka
+Environment=MYSQL_DATABASE=kanka
+Environment=MYSQL_ROOT_HOST=%
+
+# Healthcheck
+HealthCmd=healthcheck.sh --connect --innodb_initialized
+HealthRetries=3
+HealthTimeout=5s
+HealthInterval=60s
+HealthStartPeriod=10s
+HealthOnFailure=kill
+
+[Service]
+Restart=always
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target default.target

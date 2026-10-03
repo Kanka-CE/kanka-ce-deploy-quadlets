@@ -1,0 +1,25 @@
+[Unit]
+Description=Redis for KankaCE
+After=network-online.target
+Wants=network-online.target
+
+
+[Container]
+ContainerName=kanka-ce-redis
+Image=docker.io/library/redis:alpine
+Pod=kanka-ce.pod
+
+Volume=kanka-ce-redis.volume:/data
+
+# Healthcheck
+HealthCmd=redis-cli ping
+HealthRetries=3
+HealthTimeout=5s
+HealthInterval=60s
+HealthStartPeriod=10s
+HealthOnFailure=kill
+
+
+[Service]
+Restart=always
+TimeoutStartSec=120
