@@ -69,7 +69,7 @@ sudo apt -y install cockpit cockpit-podman
     2. Create a (free) kit.
     3. Go to https://fontawesome.com/kits
         1. Select your kit
-        2. copy the id either from the url: https://fontawesome.com/kits/<kit-id>/setup
+        2. copy the id either from the url: `https://fontawesome.com/kits/<kit-id>/setup`
             or from the example: `<script src="https://kit.fontawesome.com/<kit-id>.js" crossorigin="anonymous"></script>`
             and paste only the <kit-id> here.
 
