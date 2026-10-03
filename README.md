@@ -30,6 +30,7 @@ sudo dnf -y install cockpit cockpit-podman
 
 </details>
 
+<details>
 <summary>Podman – Debian (apt)</summary>
 
 Install Podman
@@ -62,14 +63,14 @@ sudo apt -y install cockpit cockpit-podman
 
 3. Create a fontawesome-key and place it into a secret
     <details>
-    <summary>Create Fontawsome `<kit-id>`</summary>
-    1.) Go to https://fontawesome.com/start to create an account.
-    2.) Create a (free) kit.
-    3.) Go to https://fontawesome.com/kits
-    3.1) Select your kit
-    3.2) copy the id either from the url: https://fontawesome.com/kits/<kit-id>/setup
-         or from the example: <script src="https://kit.fontawesome.com/<kit-id>.js" crossorigin="anonymous"></script>
-         and paste only the <kit-id> here.
+    <summary>Create Fontawsome kit-id </summary>
+    - 1.) Go to https://fontawesome.com/start to create an account.
+    - 2.) Create a (free) kit.
+    - 3.) Go to https://fontawesome.com/kits
+        - 3.1) Select your kit
+        - 3.2) copy the id either from the url: https://fontawesome.com/kits/<kit-id>/setup
+            or from the example: <script src="https://kit.fontawesome.com/<kit-id>.js" crossorigin="anonymous"></script>
+            and paste only the <kit-id> here.
     </details>
 
     ```bash
