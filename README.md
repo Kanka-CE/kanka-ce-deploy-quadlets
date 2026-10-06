@@ -12,7 +12,7 @@ updated version of a server-suitable Linux distribution, e.g., [Rocky Linux](htt
 [Podman](https://podman.io/docs/installation).
 
 **Recommendation:**
-To get a graphical interface to manage your quads, once they are deployed, you can use Cockpit with the component for Podman containers.
+To get a graphical interface to manage your quads once they are deployed, you can use Cockpit with the component for Podman containers.
 
 <details>
 <summary>Podman – Rocky Linux (dnf)</summary>
@@ -61,7 +61,7 @@ sudo apt -y install cockpit cockpit-podman
     printf "base64:$(openssl rand -base64 32)" | podman secret create kanka-ce-app-key -
     ```
 
-3. Create a fontawesome-key and place it into a secret
+3. Create a Font Awesome key and place it into a secret
     <details>
     <summary>Create Fontawsome kit-id </summary>
 
@@ -69,7 +69,7 @@ sudo apt -y install cockpit cockpit-podman
     2. Create a (free) kit.
     3. Go to https://fontawesome.com/kits
         1. Select your kit
-        2. copy the id either from the url: `https://fontawesome.com/kits/<kit-id>/setup`
+        2. Copy the ID either from the URL: `https://fontawesome.com/kits/<kit-id>/setup`
             or from the example: `<script src="https://kit.fontawesome.com/<kit-id>.js" crossorigin="anonymous"></script>`
             and paste only the <kit-id> here.
 
@@ -80,21 +80,20 @@ sudo apt -y install cockpit cockpit-podman
     printf ${FONTAWESOME_KIT} | podman secret create fontawesome-key -
     ```
 
-3. Create your configuration
-    ```bash
-    cp ~/.config/containers/systemd/kanka-ce/.env.example ~/.config/containers/systemd/kanka-ce/.env
-    ```
-    and modify `~/.config/containers/systemd/kanka-ce/.env` based on your needs.
+3. (Optional) Modify your configuration
+    As there are no secrets in the environment file, you do not need to modify it at all.
+    However, it is still recommended to adapt the settings to your liking, such as the time zone, the application name, and similar.
+    Therefore, simply modify `~/.config/containers/systemd/kanka-ce/.env` based on your needs.
 
 
-4.  Create the storage location
+5.  Create the storage location
     ```bash
     export KANKACE_STORAGE_DIR=</path/to/persistent/storage>
     mkdir -p ${KANKACE_STORAGE_DIR}/{redis,meilisearch,mariadb,KankaCE}
     sed -i "s|podman-storage-kankace|${KANKACE_STORAGE_DIR}|g" ~/.config/containers/systemd/kanka-ce/*.volume
     ```
 
-5. Apply the changes
+6. Apply the changes
     ```bash
     systemctl --user daemon-reload
     ```
@@ -103,7 +102,7 @@ sudo apt -y install cockpit cockpit-podman
     loginctl enable-linger $USER
     ```
 
-6. Run KankaCE
+7. Run KankaCE
     ```bash
     systemctl --user start kank-ce
     ```
