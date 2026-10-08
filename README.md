@@ -46,6 +46,7 @@ sudo apt -y install cockpit cockpit-podman
 
 </details>
 
+---
 
 ## Quick Start
 1. Download the repository (or your own fork of this repository) 
@@ -60,6 +61,8 @@ sudo apt -y install cockpit cockpit-podman
     printf $(openssl rand -hex 16) | podman secret create kanka-ce-meilisearch-password -
     printf "base64:$(openssl rand -base64 32)" | podman secret create kanka-ce-app-key -
     ```
+> [!WARNING]
+> Do not forget to back up your secrets somewhere safe, e.g., place them in your password manager.
 
 3. Create a Font Awesome key and place it into a secret
     <details>
@@ -81,6 +84,7 @@ sudo apt -y install cockpit cockpit-podman
     ```
 
 3. (Optional) Modify your configuration
+   
     As there are no secrets in the environment file, you do not need to modify it at all.
     However, it is still recommended to adapt the settings to your liking, such as the time zone, the application name, and similar.
     Therefore, simply modify `~/.config/containers/systemd/kanka-ce/.env` based on your needs.
@@ -106,7 +110,8 @@ sudo apt -y install cockpit cockpit-podman
     ```bash
     systemctl --user start kank-ce
     ```
-
+    
+---
 
 ## More Details on Podman Quadlets
 
@@ -124,7 +129,7 @@ git clone https://github.com/Kanka-CE/kanka-ce-deploy-quadlets.git /etc/containe
 git clone https://github.com/Kanka-CE/kanka-ce-deploy-quadlets.git ~/.config/containers/systemd/kanka-ce
 ```
 
-### Create the secrets
+### Manage secrets
 In general, Podman secrets can be created via
 ```bash
 printf <password> | podman secret create <secret-label> -
@@ -149,3 +154,43 @@ To delete a secret, run
 ```bash
 podman secret rm <secret-label>
 ```
+
+### Manage Volumes
+In the setup presented in this repository, the storage will be managed in volumes.
+In this configuration, the greatest benefit of volumes is that we can run the container
+with a different user ID and group ID than the user that is running podman.
+
+The volumes in this repository are configured such that the storage content is placed into the 
+folder: `</path/to/persistent/storage>/<Application-Name>`. 
+> [!CAUTION]
+> Remember to back up the data of the volumes, especially of KankaCE and MaraDB!
+
+Recommendation: You can back up the data of volumes via [docker-borgmatic](https://github.com/borgmatic-collective/docker-borgmatic).
+
+To view a list of all volumes, run
+```bash
+podman volumes ls
+```
+
+---
+
+## Related repositories
+
+| Repo | What it's for |
+|---|---|
+| [kanka-community-edition](https://github.com/Kanka-CE/kanka-community-edition) | The patched source code of KankaCE |
+| [docker-kanka-ce](https://github.com/Kanka-CE/docker-kanka-ce) | The Dockerfile used to build the Kanka CE container |
+| [kanka-ce-deploy](https://github.com/Kanka-CE/kanka-ce-deploy) | Docker-compose template, and the patches to turn Kanka into KankaCE |
+
+
+## License and Acknowledgements
+The files in this repository are not affiliated with the official Kanka project.  
+
+Note that Kanka itself is licensed under the [“Commons Clause” License Condition v1.0](https://github.com/owlchester/kanka/blob/develop/LICENSE).
+
+## ❤️ Support the Official Kanka Project
+If you enjoy using the Community Edition, please consider supporting the official Kanka project:
+Kanka CE exists because the upstream project is amazing.
+If you enjoy using Kanka or Kanka CE, please consider supporting the original creators:
+
+💙 **Kanka Website:** https://kanka.io  
